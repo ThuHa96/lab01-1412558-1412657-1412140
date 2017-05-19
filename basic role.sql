@@ -10,5 +10,9 @@ create role r_nhanvien;
 -- được quyền connect (login db), truy xuất bảng nhân viên qua V_NHANVIEN
 grant connect to r_nhanvien;
 grant select on HCMUS.V_NHANVIEN to r_nhanvien;
+grant select on HCMUS.V_DSTRUONGPHONG to r_nhanvien;
+grant select on HCMUS.V_DSTRUONGDA to r_nhanvien;
+grant select on HCMUS.V_DSTRUONGCHINHANH to r_nhanvien;
+
 -- gán r_nhanvien cho mọi user trong hệ thống
 grant r_nhanvien to public;

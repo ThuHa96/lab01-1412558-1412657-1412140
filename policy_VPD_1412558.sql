@@ -6,8 +6,15 @@ BEGIN
     IF(username='HCMUS') then return '';
     else
         p_manv := TO_NUMBER(username);
-        select HCMUS.NHANVIEN.MAPHONG into p_maphong from HCMUS.NHANVIEN where HCMUS.NHANVIEN.MANV = p_manv;
-        RETURN 'HCMUS.V_NHANVIEN.MAPHONG = '|| TO_CHAR(p_maphong);
+        select HCMUS.NHANVIEN.MAPHONG into p_maphong from HCMUS.NHANVIEN
+            where HCMUS.NHANVIEN.MANV = p_manv
+                and p_manv NOT IN HCMUS.V_DSTRUONGPHONG
+                and p_manv NOT IN HCMUS.V_DSTRUONGDA
+                and p_manv NOT IN HCMUS.V_DSTRUONGCHINHANH;
+        if(p_maphong !=null) then
+            RETURN 'HCMUS.V_NHANVIEN.MAPHONG = '|| TO_CHAR(p_maphong);
+        else return '1=0';
+        end if;
     end if; 
 END SEC_FUNCTION_N1;
 
@@ -28,4 +35,5 @@ begin dbms_rls.DROP_POLICY (
 end;
 */
 
+select * from hcmus.V_NHANVIEN;
 
