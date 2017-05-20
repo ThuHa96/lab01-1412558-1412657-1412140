@@ -1,67 +1,73 @@
 --Tất cả nhân viên bình thường (trừ trưởng phòng, trưởng chi nhánh và các trưởng dự án) 
 --chỉ được phép xem thông tin nhân viên trong phòng của mình, chỉ được xem lương của bản thân (VPD). (**MSSV**)ậ
+--tạo package SET_NHANVIEN_CTX_PKG
+GRANT EXEMPT ACCESS POLICY TO HCMUS;
+
+create or replace package SET_NHANVIEN_CTX_PKG
+as
+    procedure SET_PHONGBAN;
+    procedure CHECK_TRUONGPHONG;
+    procedure CHECK_TRUONGCHINHANH;
+    procedure CHECK_TRUONGDUAN;
+end;
 
 --tạo context NHANVIEN_CTX
 CREATE OR REPLACE CONTEXT NHANVIEN_CTX USING SET_NHANVIEN_CTX_PKG;
-
---tạo package SET_NHANVIEN_CTX_PKG
-create or replace package SET_NHANVIEN_CTX_PKG
-is
-  procedure SET_THONGTIN_NHANVIEN;
-end;
+-- nội dung pkg
 
 create or replace package body SET_NHANVIEN_CTX_PKG
-is
-  procedure SET_THONGTIN_NHANVIEN
-  is
-  PHONGBAN varchar2(5);
-  ISTRUONGPB varchar2(5);
-  ISTRUONGCN varchar2(5);
-  ISTRUONGDA varchar2(5);
+as
+  procedure SET_PHONGBAN
+  as PHONGBAN varchar2(5);
   begin
-    --tìm phòng của nhân viên đang login
     select MAPHONG into PHONGBAN from HCMUS.NHANVIEN where MANV = sys_context('userenv', 'session_user');
     dbms_session.set_context('NHANVIEN_CTX', 'PHONGBAN', PHONGBAN);
-    --kiểm tra nhân viên là trưởng phòng
-    select 
-      case 
+  end;
+  
+  procedure CHECK_TRUONGPHONG
+  as ISTRUONGPB varchar2(5);
+  begin
+    select case 
         when exists(select MAPHONG  from HCMUS.PHONGBAN where TRUONGPHONG = sys_context('userenv', 'session_user'))
         then 'TRUE'
         else 'FALSE'
       end into ISTRUONGPB
     from dual;
     dbms_session.set_context('NHANVIEN_CTX', 'ISTRUONGPB', ISTRUONGPB);
-
-    --kiểm tra nhân viên là trưởng chi nhánh
-    select 
-      case 
+  end;
+  
+  procedure CHECK_TRUONGCHINHANH
+  as ISTRUONGCN varchar2(5);
+  begin
+    select case 
         when exists(select MACN  from HCMUS.CHINHANH where TRUONGCHINHANH = sys_context('userenv', 'session_user'))
         then 'TRUE'
         else 'FALSE'
       end into ISTRUONGCN
     from dual;
     dbms_session.set_context('NHANVIEN_CTX', 'ISTRUONGCN', ISTRUONGCN);
-
-    --kiểm tra nhân viên là trưởng dự án
-    select 
-      case  
+  end;
+  
+  procedure CHECK_TRUONGDUAN
+  as ISTRUONGDA varchar2(5);
+  begin
+    select case 
         when exists(select MADA  from HCMUS.DUAN where TRUONGDA = sys_context('userenv', 'session_user'))
         then 'TRUE'
         else 'FALSE'
       end into ISTRUONGDA
     from dual;
     dbms_session.set_context('NHANVIEN_CTX', 'ISTRUONGDA', ISTRUONGDA);
-
-    --không làm trưởng 
-    exception
-      when no_data_found then null;
   end;
 end;
 
 --tạo logon trigger cho package
 create or replace trigger set_NHANVIEN_CTX_TRIGGER after logon on database
 begin
-  HCMUS.SET_NHANVIEN_CTX_PKG.SET_THONGTIN_NHANVIEN;
+    HCMUS.SET_NHANVIEN_CTX_PKG.SET_PHONGBAN;
+    HCMUS.SET_NHANVIEN_CTX_PKG.CHECK_TRUONGPHONG;
+    HCMUS.SET_NHANVIEN_CTX_PKG.CHECK_TRUONGCHINHANH;
+    HCMUS.SET_NHANVIEN_CTX_PKG.CHECK_TRUONGDUAN;
 end;
 
 --Xem nhân viên chung phòng với nhân viên đã login
@@ -71,7 +77,7 @@ as
   PHONGBAN varchar2(5);
   TEMP varchar2(100);
 begin
-  if sys_context('userenv', 'ISDBA') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGPB') = 'TRUE' 
+  if sys_context('userenv', 'SESSION_USER') = 'HCMUS' or sys_context('userenv', 'ISDBA') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGPB') = 'TRUE' 
   or sys_context('NHANVIEN_CTX', 'ISTRUONGCN') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGDA') = 'TRUE' then
     return '';
   else
@@ -107,7 +113,7 @@ as
   USERNAME varchar2(10);
   TEMP varchar2(100);
 begin
-  if sys_context('userenv', 'ISDBA') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGPB') = 'TRUE' 
+  if sys_context('userenv', 'SESSION_USER') = 'HCMUS' or sys_context('userenv', 'ISDBA') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGPB') = 'TRUE' 
   or sys_context('NHANVIEN_CTX', 'ISTRUONGCN') = 'TRUE' or sys_context('NHANVIEN_CTX', 'ISTRUONGDA') = 'TRUE' then
     return '';
   else
@@ -140,3 +146,12 @@ end;
 
 -- test
 grant select on HCMUS.NHANVIEN to public;
+
+/*
+SELECT * FROM HCMUS.NHANVIEN;
+SELECT sys_context('NHANVIEN_CTX', 'ISTRUONGPB') FROM DUAL;
+SELECT sys_context('NHANVIEN_CTX', 'ISTRUONGCN') FROM DUAL;
+SELECT sys_context('NHANVIEN_CTX', 'ISTRUONGDA') FROM DUAL;
+SELECT sys_context('NHANVIEN_CTX', 'PHONGBAN') FROM DUAL;
+*/
+

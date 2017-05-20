@@ -122,7 +122,7 @@ Drop table DUAN;
 Drop table PHANCONG;
 Drop table CHITIEU;
 
-Select * from NHANVIEN;
+Select * from HCMUS.NHANVIEN;
 Select * from CHINHANH;
 Select * from PHONGBAN;
 Select * from DUAN;
