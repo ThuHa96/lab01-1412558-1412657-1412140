@@ -1,32 +1,45 @@
-/* tạo user*/
 alter session set "_ORACLE_SCRIPT"=true;
-CREATE USER "1" IDENTIFIED BY "1";
-CREATE USER "2" IDENTIFIED BY "2";
-CREATE USER "3" IDENTIFIED BY "3";
-CREATE USER "4" IDENTIFIED BY "4";
-CREATE USER "5" IDENTIFIED BY "5";
-CREATE USER "6" IDENTIFIED BY "6";
-CREATE USER "7" IDENTIFIED BY "7";
-CREATE USER "8" IDENTIFIED BY "8";
-CREATE USER "9" IDENTIFIED BY "9";
-CREATE USER "10" IDENTIFIED BY "10";
-CREATE USER "11" IDENTIFIED BY "11";
-CREATE USER "12" IDENTIFIED BY "12";
-CREATE USER "13" IDENTIFIED BY "13";
-CREATE USER "14" IDENTIFIED BY "14";
-CREATE USER "15" IDENTIFIED BY "15";
-CREATE USER "16" IDENTIFIED BY "16";
-CREATE USER "17" IDENTIFIED BY "17";
-CREATE USER "18" IDENTIFIED BY "18";
-CREATE USER "19" IDENTIFIED BY "19";
-CREATE USER "20" IDENTIFIED BY "20";
-CREATE USER "21" IDENTIFIED BY "21";
-CREATE USER "22" IDENTIFIED BY "22";
-CREATE USER "23" IDENTIFIED BY "23";
-CREATE USER "24" IDENTIFIED BY "24";
-CREATE USER "25" IDENTIFIED BY "25";
+CREATE USER HCMUS IDENTIFIED BY HCMUS;
+GRANT DBA, RESOURCE TO HCMUS WITH ADMIN OPTION;
+GRANT CREATE SESSION TO HCMUS;
+GRANT ALL PRIVILEGES TO HCMUS;
 
-CREATE USER hcmus IDENTIFIED BY hcmus;
-GRANT DBA, RESOURCE TO hcmus WITH ADMIN OPTION;
-GRANT CREATE SESSION TO hcmus;
-GRANT ALL PRIVILEGES TO hcmus;
+--Tạo user từ mã nhân viên
+declare
+  USERNAME varchar2(200);
+begin
+for manv in (select MANV from NHANVIEN)
+loop
+  TEMP := 'create user ' || USERNAME.MANV || ' identified by ' || USERNAME.MANV || ' default tablespace users temporary tablespace temp';
+  execute immediate TEMP;
+end loop;
+end;     
+
+-- Cấp quyền đăng nhập và tọa session
+declare
+  TEMP varchar2(500);
+begin
+for USERNAME in (select MANV from NHANVIEN)
+loop
+  TEMP := 'grant create session to ' || USERNAME.MANV;
+  execute immediate TEMP;
+end loop;
+end;
+
+-- xóa tất cả nhân viên
+declare
+  TEMP varchar2(200);
+begin
+for USERNAME in (select MANV from NHANVIEN)
+loop
+  temp := 'drop user ' || USERNAME.MANV;
+  execute immediate TEMP;
+end loop;
+end; 
+
+/* tạo các role cơ bản*/
+create role R_GIAMDOC;
+create role R_TRUONGPHONG;
+create role R_TRUONGCHINHANH;
+create role R_TRUONGDUAN;
+create role R_NHANVIEN;
