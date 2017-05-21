@@ -5,13 +5,14 @@ GRANT CREATE SESSION TO HCMUS;
 GRANT ALL PRIVILEGES TO HCMUS;
 GRANT EXEMPT ACCESS POLICY TO HCMUS;
 
+-- LOGIN AS HCMUS
 --Tạo user từ mã nhân viên
 declare
-  USERNAME varchar2(200);
+  TEMP varchar2(200);
 begin
-for manv in (select MANV from NHANVIEN)
+for MANV in (select MANV from NHANVIEN)
 loop
-  TEMP := 'create user ' || USERNAME.MANV || ' identified by ' || USERNAME.MANV || ' default tablespace users temporary tablespace temp';
+  TEMP := 'create user ' || MANV.MANV || ' identified by ' || MANV.MANV || ' default tablespace users temporary tablespace temp';
   execute immediate TEMP;
 end loop;
 end;     
@@ -28,6 +29,7 @@ end loop;
 end;
 
 -- xóa tất cả nhân viên
+/*
 declare
   TEMP varchar2(200);
 begin
@@ -37,7 +39,7 @@ loop
   execute immediate TEMP;
 end loop;
 end; 
-
+*/
 /* tạo các role cơ bản*/
 create role R_GIAMDOC;
 create role R_TRUONGPHONG;
