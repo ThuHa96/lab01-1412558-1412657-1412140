@@ -1,7 +1,6 @@
 --Tất cả nhân viên bình thường (trừ trưởng phòng, trưởng chi nhánh và các trưởng dự án) 
 --chỉ được phép xem thông tin nhân viên trong phòng của mình, chỉ được xem lương của bản thân (VPD). (**MSSV**)ậ
 --tạo package SET_NHANVIEN_CTX_PKG
-GRANT EXEMPT ACCESS POLICY TO HCMUS;
 
 create or replace package SET_NHANVIEN_CTX_PKG
 as
