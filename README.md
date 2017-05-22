@@ -48,7 +48,8 @@ Link ảnh GIF demo ứng dụng:
 - policy_9_OLS
 ![](http://i.imgur.com/By2VySn.gif)
 
-Tạo ảnh GIF với chương trình [LiceCap](http://www.cockos.com/licecap/).
+- policy_7_VPD
+![](http://i.imgur.com/RO3awIY.gif)
 
 
 ## License
