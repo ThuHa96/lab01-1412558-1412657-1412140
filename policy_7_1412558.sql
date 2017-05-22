@@ -1,6 +1,5 @@
 -- Trưởng dự án chỉ được phép đọc, ghi thông tin chi tiêu của dự án mình quản lý (VPD). (**MSSV**)
 CREATE VIEW V_CHITIEU_OF_TRUONGDA AS SELECT * FROM HCMUS.CHITIEU;
-
 create or replace function FUNCTION_TRUONGDA_CHITIEU(object_schema in varchar2, object_name in varchar2)
 return varchar2
 as
