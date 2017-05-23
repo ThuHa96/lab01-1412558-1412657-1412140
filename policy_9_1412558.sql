@@ -174,5 +174,11 @@ EXEC SA_POLICY_ADMIN.APPLY_TABLE_POLICY('OLS_DUAN', 'HCMUS', 'CHITIEU', 'READ_CO
 
 -- PHÂN QUYỀN SELECT HCMUS.CHITIEU (login as hcm)
 GRANT SELECT ON HCMUS.CHITIEU TO NV001,NV026,NV041,NV056,NV071;
-SELECT * FROM HCMUS.CHITIEU;
 SELECT * FROM HCMUS.DUAN;
+SELECT * FROM HCMUS.CHITIEU;
+-- PB001-002-003 thuộc CN001 do NV001 làm tưởng CN001, xem được chi tiêu cá dự án từ DA001-007
+-- PB006-007-008 thuộc CN002 do NV026 làm tưởng CN002, xem được chi tiêu các dự án từ DA008-009-010
+-- PB009-010-011 thuộc CN003 do NV041 làm tưởng CN003, xem được chi tiêu các dự án từ DA011-012-013
+-- PB012-013-014 thuộc CN004 do NV056 làm tưởng CN004, xem được chi tiêu các dự án từ DA014-015-016
+-- CN001 là tổng công ty, nên NV001 được xem hết
+-- CN003 là Hà nội, được xem hết trừ chi tiêu của DA001-007(tổng công ty)
